@@ -3,7 +3,7 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 if (!isset($_SESSION)) {
     session_start();
 }
-if (!isset($_SESSION["user_hash"])) {
+if (!isset($_SESSION["user_hash"]) && !isset($_SESSION["login"])) {
     header("location: login.php");
     die;
 }
@@ -115,10 +115,15 @@ if (!file_exists('../uploads/images/')) {
     <!-- Disable tap highlight on IE -->
     <meta name="msapplication-tap-highlight" content="no">
     
-    <link rel="shortcut icon" href="<?php echo isset($favicon['photo']) ? _upload_hinhanh_l.$favicon['photo'] : ''; ?>">
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="<?php echo isset($favicon['photo']) ? _upload_hinhanh_l.$favicon['photo'] : '../uploads/images/favicon.png'; ?>">
     
-    <!-- Bootstrap CSS -->
+    <!-- jQuery FIRST - Tải jQuery trước khi tải Bootstrap và các script khác -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Bootstrap CSS và JS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -130,10 +135,13 @@ if (!file_exists('../uploads/images/')) {
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
     
-    <!-- Original scripts -->
+    <!-- Original scripts - External JS và CKEditor --> 
     <script type="text/javascript" src="js/external.js"></script>
     <script src="ckeditor/ckeditor.js"></script>
     <script src="ckfinder/ckfinder.js"></script>
+    
+    <!-- Scripts from ArchitectUI -->
+    <script type="text/javascript" src="dist/assets/js/main.js"></script>
 </head>
 <body class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header">
     <!-- Header start -->
@@ -146,7 +154,7 @@ if (!file_exists('../uploads/images/')) {
                 $logo_arr = $d->fetch_array($sql_logo);
                 $logo = (!empty($logo_arr)) ? $logo_arr[0] : array();
                 ?>
-                <img src="<?php echo isset($logo['photo']) ? _upload_hinhanh_l.$logo['photo'] : $config_url.'/img/user-circle.png'; ?>" alt="<?php echo isset($company['ten']) ? $company['ten'] : 'Admin'; ?>">
+                <img src="<?php echo isset($logo['photo']) ? _upload_hinhanh_l.$logo['photo'] : '../uploads/images/logo.png'; ?>" alt="<?php echo isset($company['ten']) ? $company['ten'] : 'Admin'; ?>">
             </div>
             <div class="header__pane ml-auto">
                 <div>
@@ -203,7 +211,7 @@ if (!file_exists('../uploads/images/')) {
                                         <a href="index.php?com=user&act=admin_edit"><button type="button" tabindex="0" class="dropdown-item"><?php echo $lang == 'vi' ? 'Thông tin tài khoản' : 'Account Info'; ?></button></a>
                                         <a href="index.php?com=about&act=capnhat"><button type="button" tabindex="0" class="dropdown-item"><?php echo $lang == 'vi' ? 'Cấu hình website' : 'Website Settings'; ?></button></a>
                                         <div tabindex="-1" class="dropdown-divider"></div>
-                                        <a href="index.php?com=user&act=logout"><button type="button" tabindex="0" class="dropdown-item text-danger"><?php echo $lang == 'vi' ? 'Đăng xuất' : 'Logout'; ?></button></a>
+                                        <a href="login.php?logout=1"><button type="button" tabindex="0" class="dropdown-item text-danger"><?php echo $lang == 'vi' ? 'Đăng xuất' : 'Logout'; ?></button></a>
                                     </div>
                                 </div>
                             </div>
@@ -387,9 +395,9 @@ if (!file_exists('../uploads/images/')) {
                     </div>
                 </div>
                 
+                <?php } else { ?>
+                    <?php include _template.$template."_tpl.php"; ?>
                 <?php } ?>
-                
-                <?php include _template.$template."_tpl.php"; ?>
                 
             </div>
             <div class="app-wrapper-footer">
@@ -418,81 +426,76 @@ if (!file_exists('../uploads/images/')) {
         <!-- Main content end -->
     </div>
     
-    <!-- jQuery and Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Scripts from ArchitectUI -->
-    <script type="text/javascript" src="dist/assets/js/main.js"></script>
-    
     <?php if(!isset($_GET['com']) || $_GET['com']=='') { 
         $chartData = get_access_chart_data();
     ?>
     <script>
         // Biểu đồ thống kê truy cập
-        var ctx = document.getElementById('accessChart').getContext('2d');
-        var accessChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: <?php echo json_encode($chartData['labels']); ?>,
-                datasets: [{
-                    label: '<?php echo $lang == 'vi' ? 'Lượt truy cập' : 'Visits'; ?>',
-                    data: <?php echo json_encode($chartData['data']); ?>,
-                    backgroundColor: 'rgba(63, 106, 216, 0.2)',
-                    borderColor: 'rgba(63, 106, 216, 1)',
-                    borderWidth: 2,
-                    pointBackgroundColor: 'rgba(63, 106, 216, 1)',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgba(63, 106, 216, 1)',
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.05)'
+        $(document).ready(function() {
+            var ctx = document.getElementById('accessChart').getContext('2d');
+            var accessChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: <?php echo json_encode($chartData['labels']); ?>,
+                    datasets: [{
+                        label: '<?php echo $lang == 'vi' ? 'Lượt truy cập' : 'Visits'; ?>',
+                        data: <?php echo json_encode($chartData['data']); ?>,
+                        backgroundColor: 'rgba(63, 106, 216, 0.2)',
+                        borderColor: 'rgba(63, 106, 216, 1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(63, 106, 216, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(63, 106, 216, 1)',
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
                         }
                     },
-                    x: {
-                        grid: {
-                            display: false
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                            padding: 10,
+                            cornerRadius: 4,
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold'
+                            }
                         }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'top'
                     },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false,
-                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                        padding: 10,
-                        cornerRadius: 4,
-                        titleFont: {
-                            size: 14,
-                            weight: 'bold'
-                        }
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    },
+                    animation: {
+                        duration: 1500,
+                        easing: 'easeOutQuart'
                     }
-                },
-                interaction: {
-                    mode: 'nearest',
-                    axis: 'x',
-                    intersect: false
-                },
-                animation: {
-                    duration: 1500,
-                    easing: 'easeOutQuart'
                 }
-            }
+            });
         });
     </script>
     <?php } ?>
