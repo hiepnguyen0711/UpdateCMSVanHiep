@@ -3,9 +3,19 @@ $count_sp = $d->num_rows("select * from #_sanpham");
 $count_baiviet = $d->num_rows("select * from #_tintuc");
 $count_donhang = $d->num_rows("select * from #_dathang");
 $count_khachhang = $d->num_rows("select * from #_dathang GROUP BY dien_thoai");
-// $donhangmoi = $d->o_fet("select * from #_dathang where trangthai_xuly = 0 order by id desc");
+// Đảm bảo biến donhangmoi được định nghĩa
+$donhangmoi = $d->o_fet("select * from #_dathang where trangthai_xuly = 0 order by id desc");
+if(!isset($donhangmoi) || !is_array($donhangmoi)) {
+    $donhangmoi = array(); // Đảm bảo biến là một mảng trống nếu không có dữ liệu
+}
 $lienhemoi = $d->o_fet("select * from #_lienhe where trang_thai = 0 and loai_lienhe = 0 order by id desc");
+if(!isset($lienhemoi) || !is_array($lienhemoi)) {
+    $lienhemoi = array();
+}
 $khieunaimoi = $d->o_fet("select * from #_lienhe where trang_thai = 0 and loai_lienhe = 1 order by id desc");
+if(!isset($khieunaimoi) || !is_array($khieunaimoi)) {
+    $khieunaimoi = array();
+}
 ?>
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -107,16 +117,22 @@ $khieunaimoi = $d->o_fet("select * from #_lienhe where trang_thai = 0 and loai_l
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach ($khieunaimoi as $key => $value) { ?>
+                                    <?php if(is_array($khieunaimoi) && count($khieunaimoi) > 0) { ?>
+                                        <?php foreach ($khieunaimoi as $key => $value) { ?>
+                                            <tr>
+                                                <td class="text-center"><?= $key + 1 ?></td>
+                                                <td><?= $value['ho_ten'] ?></td>
+                                                <td><?= $value['ma_van_don'] ?></td>
+                                                <td><?= $value['tieu_de'] != '' ? '<b>' . $value['tieu_de'] . ' </b> ' : '' ?><?= catchuoi($value['noi_dung'], 150) ?></td>
+                                                <td class=""><?= $value['ngay_hoi'] ?></td>
+                                                <td class="text-center">
+                                                    <a data-toggle="modal" onclick="load_ajax(<?= $value['id'] ?>)" data-target="#myModal" class="btn btn-xs btn-info" href="#" title="Sửa">Chi tiết</a>
+                                                </td>
+                                            </tr>
+                                        <?php } ?>
+                                    <?php } else { ?>
                                         <tr>
-                                            <td class="text-center"><?= $key + 1 ?></td>
-                                            <td><?= $value['ho_ten'] ?></td>
-                                            <td><?= $value['ma_van_don'] ?></td>
-                                            <td><?= $value['tieu_de'] != '' ? '<b>' . $value['tieu_de'] . ' </b> ' : '' ?><?= catchuoi($value['noi_dung'], 150) ?></td>
-                                            <td class=""><?= $value['ngay_hoi'] ?></td>
-                                            <td class="text-center">
-                                                <a data-toggle="modal" onclick="load_ajax(<?= $value['id'] ?>)" data-target="#myModal" class="btn btn-xs btn-info" href="#" title="Sửa">Chi tiết</a>
-                                            </td>
+                                            <td colspan="6" class="text-center">Không có dữ liệu</td>
                                         </tr>
                                     <?php } ?>
                                 </tbody>
@@ -132,7 +148,7 @@ $khieunaimoi = $d->o_fet("select * from #_lienhe where trang_thai = 0 and loai_l
                 </div>
             </div>
             <!-- đơn khiếu nại end -->
-            <?php if (get_json('cart', 'display')) { ?>
+            <?php if (isset($config) && isset($config['cart']) && isset($config['cart']['display']) && $config['cart']['display']) { ?>
                 <div class="col-lg-6 col-xs-12">
                     <div class="box box-info">
                         <div class="box-header with-border">
@@ -156,22 +172,25 @@ $khieunaimoi = $d->o_fet("select * from #_lienhe where trang_thai = 0 and loai_l
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php foreach ($donhangmoi as $key => $value) {
-
-                                        ?>
+                                        <?php if(is_array($donhangmoi) && count($donhangmoi) > 0) { ?>
+                                            <?php foreach ($donhangmoi as $key => $value) { ?>
+                                                <tr>
+                                                    <td><a href="index.php?p=quan-ly-don-hang&a=edit&id=<?= $value['id'] ?>"><?= $value['ma_dh'] ?></a></td>
+                                                    <td><?= $value['ho_ten'] ?></td>
+                                                    <td><span class="label label-success">Đơn hàng mới</span></td>
+                                                    <td>
+                                                        <?= $value['ngay_dathang'] ?>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <a href="index.php?p=quan-ly-don-hang&a=edit&id=<?= $value['id'] ?>" class="label label-primary"><i class="glyphicon glyphicon-edit"></i> Chi tiết</a>
+                                                    </td>
+                                                </tr>
+                                            <?php } ?>
+                                        <?php } else { ?>
                                             <tr>
-                                                <td><a href="index.php?p=quan-ly-don-hang&a=edit&id=<?= $value['id'] ?>"><?= $value['ma_dh'] ?></a></td>
-                                                <td><?= $value['ho_ten'] ?></td>
-                                                <td><span class="label label-success">Đơn hàng mới</span></td>
-                                                <td>
-                                                    <?= $value['ngay_dathang'] ?>
-                                                </td>
-                                                <td class="text-center">
-                                                    <a href="index.php?p=quan-ly-don-hang&a=edit&id=<?= $value['id'] ?>" class="label label-primary"><i class="glyphicon glyphicon-edit"></i> Chi tiết</a>
-                                                </td>
+                                                <td colspan="5" class="text-center">Không có dữ liệu</td>
                                             </tr>
                                         <?php } ?>
-
                                     </tbody>
                                 </table>
                             </div>
@@ -208,15 +227,21 @@ $khieunaimoi = $d->o_fet("select * from #_lienhe where trang_thai = 0 and loai_l
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach ($lienhemoi as $key => $value) { ?>
+                                    <?php if(is_array($lienhemoi) && count($lienhemoi) > 0) { ?>
+                                        <?php foreach ($lienhemoi as $key => $value) { ?>
+                                            <tr>
+                                                <td class="text-center"><?= $key + 1 ?></td>
+                                                <td><?= $value['ho_ten'] ?></td>
+                                                <td><?= $value['tieu_de'] != '' ? '<b>' . $value['tieu_de'] . ' </b> ' : '' ?><?= catchuoi($value['noi_dung'], 150) ?></td>
+                                                <td class=""><?= $value['ngay_hoi'] ?></td>
+                                                <td class="text-center">
+                                                    <a data-toggle="modal" onclick="load_ajax(<?= $value['id'] ?>)" data-target="#myModal" class="btn btn-xs btn-info" href="#" title="Sửa">Chi tiết</a>
+                                                </td>
+                                            </tr>
+                                        <?php } ?>
+                                    <?php } else { ?>
                                         <tr>
-                                            <td class="text-center"><?= $key + 1 ?></td>
-                                            <td><?= $value['ho_ten'] ?></td>
-                                            <td><?= $value['tieu_de'] != '' ? '<b>' . $value['tieu_de'] . ' </b> ' : '' ?><?= catchuoi($value['noi_dung'], 150) ?></td>
-                                            <td class=""><?= $value['ngay_hoi'] ?></td>
-                                            <td class="text-center">
-                                                <a data-toggle="modal" onclick="load_ajax(<?= $value['id'] ?>)" data-target="#myModal" class="btn btn-xs btn-info" href="#" title="Sửa">Chi tiết</a>
-                                            </td>
+                                            <td colspan="5" class="text-center">Không có dữ liệu</td>
                                         </tr>
                                     <?php } ?>
                                 </tbody>
@@ -235,23 +260,31 @@ $khieunaimoi = $d->o_fet("select * from #_lienhe where trang_thai = 0 and loai_l
     </section>
     <!-- /.content -->
 </div>
-<link rel="stylesheet" href="public/plugin/datatables.net-bs/css/dataTables.bootstrap.min.css">
+<!-- <link rel="stylesheet" href="public/plugin/datatables.net-bs/css/dataTables.bootstrap.min.css"> -->
 <!-- DataTables -->
-<script src="public/plugin/datatables.net/js/jquery.dataTables.min.js"></script>
-<script src="public/plugin/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<!-- <script src="public/plugin/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="public/plugin/datatables.net-bs/js/dataTables.bootstrap.min.js"></script> -->
 <script>
-    $('.dataTable').DataTable({
-        'autoWidth': false,
-        'searching': false,
-        'lengthChange': false
-    });
+$(document).ready(function() {
+    if ($.fn.DataTable) {
+        $('.dataTable').DataTable({
+            'autoWidth': false,
+            'searching': false,
+            'lengthChange': false
+        });
+    }
+});
 </script>
 
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-body" id="body-lienhe">
-
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Chi tiết liên hệ</h4>
+            </div>
+            <div class="modal-body">
+                <div id="test-modal"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
@@ -259,18 +292,17 @@ $khieunaimoi = $d->o_fet("select * from #_lienhe where trang_thai = 0 and loai_l
         </div>
     </div>
 </div>
-<script>
+
+<script type="text/javascript">
     function load_ajax(id) {
         $.ajax({
-            url: "sources/ajax.php",
-            type: "post",
-            dataType: "text",
+            url: 'index.php?p=lien-he&a=ajax_detail',
+            type: 'POST',
             data: {
-                do: 'get_lienhe',
                 id: id
             },
-            success: function(result) {
-                $('#body-lienhe').html(result);
+            success: function(data) {
+                $('#test-modal').html(data);
             }
         });
     }

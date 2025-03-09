@@ -1,0 +1,1 @@
+// This file was created to view the fetch_array function structure 

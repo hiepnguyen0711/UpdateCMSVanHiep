@@ -1,0 +1,220 @@
+/* Custom styles for ArchitectUI Pro in CMS Van Hiep */
+
+/* Fix for admin area */
+.app-header__logo .logo-src {
+    width: auto;
+    height: 40px;
+    display: flex;
+    align-items: center;
+}
+
+.app-header__logo .logo-src img {
+    max-height: 40px;
+    max-width: 100%;
+}
+
+/* Customize sidebar */
+.app-sidebar {
+    background: #343a40;
+}
+
+.app-sidebar__heading {
+    color: #ffffff;
+    opacity: 0.8;
+}
+
+.vertical-nav-menu li a {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.vertical-nav-menu li a:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.vertical-nav-menu li a.mm-active {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.15);
+    font-weight: bold;
+}
+
+.vertical-nav-menu ul:before {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.vertical-nav-menu ul > li > a {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.vertical-nav-menu ul > li > a:hover {
+    color: #fff;
+}
+
+.vertical-nav-menu ul > li.mm-active > a {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.hamburger-inner, 
+.hamburger-inner::before, 
+.hamburger-inner::after {
+    background-color: #fff;
+}
+
+/* Custom table styles */
+.table-admin {
+    background-color: #fff;
+    box-shadow: 0 0.46875rem 2.1875rem rgba(4,9,20,0.03), 
+                0 0.9375rem 1.40625rem rgba(4,9,20,0.03), 
+                0 0.25rem 0.53125rem rgba(4,9,20,0.05), 
+                0 0.125rem 0.1875rem rgba(4,9,20,0.03);
+    border-radius: 0.25rem;
+}
+
+.table-admin thead th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+/* Form elements customization */
+.form-control:focus {
+    border-color: #3f6ad8;
+    box-shadow: 0 0 0 0.2rem rgba(63, 106, 216, 0.25);
+}
+
+.btn-primary {
+    background-color: #3f6ad8;
+    border-color: #3f6ad8;
+}
+
+.btn-primary:hover {
+    background-color: #2955c8;
+    border-color: #2955c8;
+}
+
+/* Responsive fixes */
+@media (max-width: 991.98px) {
+    .app-main__outer {
+        padding-left: 0 !important;
+    }
+    
+    .app-sidebar {
+        background: #343a40;
+    }
+}
+
+/* Override some bootstrap styles to match architectUI */
+.card {
+    box-shadow: 0 0.46875rem 2.1875rem rgba(4,9,20,0.03), 
+                0 0.9375rem 1.40625rem rgba(4,9,20,0.03), 
+                0 0.25rem 0.53125rem rgba(4,9,20,0.05), 
+                0 0.125rem 0.1875rem rgba(4,9,20,0.03);
+    border-width: 0;
+    transition: all .2s;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0.66875rem 2.3875rem rgba(4,9,20,0.03), 
+                0 1.1375rem 1.60625rem rgba(4,9,20,0.03), 
+                0 0.45rem 0.73125rem rgba(4,9,20,0.05), 
+                0 0.325rem 0.3875rem rgba(4,9,20,0.03);
+}
+
+/* Fix content height */
+.app-main__inner {
+    min-height: calc(100vh - 150px);
+}
+
+/* Fix for CKEditor */
+.cke_chrome {
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+}
+
+/* Fix for pagination */
+.pagination {
+    margin-bottom: 0;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #3f6ad8;
+    border-color: #3f6ad8;
+}
+
+.pagination .page-link {
+    color: #3f6ad8;
+}
+
+/* Custom styles for forms */
+.form-group label {
+    font-weight: 500;
+}
+
+.required-field::after {
+    content: " *";
+    color: #dc3545;
+}
+
+/* Custom alert styles */
+.alert {
+    border-radius: 0.25rem;
+    border-left-width: 4px;
+}
+
+.alert-success {
+    border-left-color: #3ac47d;
+}
+
+.alert-danger {
+    border-left-color: #d92550;
+}
+
+.alert-warning {
+    border-left-color: #f7b924;
+}
+
+.alert-info {
+    border-left-color: #16aaff;
+}
+
+/* Tùy chỉnh cho dropdown menu */
+.dropdown-menu {
+    box-shadow: 0 0.46875rem 2.1875rem rgba(4,9,20,0.03), 
+                0 0.9375rem 1.40625rem rgba(4,9,20,0.03), 
+                0 0.25rem 0.53125rem rgba(4,9,20,0.05), 
+                0 0.125rem 0.1875rem rgba(4,9,20,0.03);
+    border: none;
+}
+
+.dropdown-item:hover, .dropdown-item:focus {
+    background-color: #e0f3ff;
+    color: #3f6ad8;
+}
+
+/* Tùy chỉnh cho các widget chính */
+.widget-content .widget-numbers {
+    font-size: 2.2rem;
+}
+
+.icon-gradient.bg-mean-fruit {
+    background-image: linear-gradient(120deg, #fccb90 0%, #d57eeb 100%);
+}
+
+/* Fix các lỗi hiển thị trên mobile */
+@media (max-width: 576px) {
+    .app-page-title {
+        padding: 15px;
+        margin: -15px -15px 15px;
+    }
+    
+    .app-page-title .page-title-icon {
+        margin: 0 15px 0 0;
+        width: 50px;
+        height: 50px;
+    }
+    
+    .app-main__inner {
+        padding: 15px 15px 0;
+    }
+} 
