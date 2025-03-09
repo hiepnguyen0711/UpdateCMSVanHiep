@@ -11,7 +11,7 @@ $config = array(
         'servername' => 'localhost',
         'username' => 'root',
         'password' => '',
-        'database' => 'tn_vanchuyen_scaexpress_2'
+        'database' => 'cms_vanhiep'
     ),
     'lang' => array(
         '0' => array(
